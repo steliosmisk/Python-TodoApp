@@ -33,7 +33,7 @@ def add_task(final_file):
             while not task:
                 print("[!] Enter a valid task!")
                 task = input(f"{i + 1}. Enter the task: ").strip().lower()
-            file.write(task + "\n")
+            file.write(f'{i+1}. {task}' + "\n")
         time.sleep(1)
         print("[+] Tasks added.")
 
@@ -42,7 +42,7 @@ def remove_task(final_file):
     with open(final_file, "r") as file:
         info = file.read()
         print(info)
-        task_to_remove = input("Enter the task to remove: ").strip().lower()
+        task_to_remove = input("Enter the task to (the name with the number! e.g 1. example): ").strip().lower()
         if task_to_remove in info:
             info = info.replace(task_to_remove, "")
             with open(final_file, "w") as file:
