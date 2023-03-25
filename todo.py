@@ -1,7 +1,8 @@
 import time
+import os
 
 
-def options():
+def print_options():
     print("-- TO-DO LIST APP --")
     print("1. Add a new task")
     print("2. Remove a task")
@@ -11,72 +12,105 @@ def options():
     print("6. Exit")
 
 
-while True:
-    try:
-        options()
-        choice = int(input("Enter your choice: "))
+def create_file(file_name):
+    final_file = f'{file_name}.txt'
+    if os.path.exists(final_file):
+        print("[*] Open File...")
+        time.sleep(1)
+    else:
+        with open(final_file, "w") as file:
+            pass  # create an empty file
+        print(f"[*] {file_name}.txt is being created...")
+        print("[+] YOUR FILE SUCCESSFULLY CREATED!")
+    return final_file
 
-        if choice == 1:
-            number_task = int(input("Enter the number of the task: "))
-            with open("todo.txt", "a") as file:
-                for tasks in range(number_task):
-                    task = input(f"{tasks + 1}. Enter the task: ").lower()
 
-                    while len(task) == 0:
-                        print("[!] Enter a valid task!")
-                        task = input(f"{tasks + 1}. Enter the task: ").lower()
+def add_task(final_file):
+    number_task = int(input("Enter the number of tasks: "))
+    with open(final_file, "a") as file:
+        for i in range(number_task):
+            task = input(f"{i + 1}. Enter the task: ").strip().lower()
+            while not task:
+                print("[!] Enter a valid task!")
+                task = input(f"{i + 1}. Enter the task: ").strip().lower()
+            file.write(task + "\n")
+        time.sleep(1)
+        print("[+] Tasks added.")
 
-                    file.write(task + "\n")
 
-                time.sleep(1)
-                print("[+] Tasks added\n")
-
-        elif choice == 2:
-            with open("todo.txt", "r") as file:
-                info = file.read()
-                print(info)
-                remove_task = input("Enter the task to remove: ").lower()
-
-                if remove_task in info:
-                    info = info.replace(remove_task, "")
-
-                    with open("todo.txt", "w") as file:
-                        file.write(info)
-
-                    print("[-] Task removed\n")
-                else:
-                    print("[!] Task not found\n")
-
-        elif choice == 3:
-            with open("todo.txt", "r") as file:
-                info = file.read()
-                print(info)
-
-        elif choice == 4:
-            with open("todo.txt", "w") as file:
-                file.write("")
-
-            print("[-] All tasks removed\n")
-
-        elif choice == 5:
-            with open("todo.txt", "r") as file:
-                info = file.read()
-                print(info)
-                edit_task = input("Enter the task to edit: ").lower()
-
-                if edit_task in info:
-                    edited_task = input("Enter the new task: ").lower()
-                    info = info.replace(edit_task, edited_task)
-
-                    with open("todo.txt", "w") as file:
-                        file.write(info)
-
-                    print("[+] Task edited\n")
-                else:
-                    print("[!] Task not found\n")
-
+def remove_task(final_file):
+    with open(final_file, "r") as file:
+        info = file.read()
+        print(info)
+        task_to_remove = input("Enter the task to remove: ").strip().lower()
+        if task_to_remove in info:
+            info = info.replace(task_to_remove, "")
+            with open(final_file, "w") as file:
+                file.write(info)
+            print("[-] Task removed.")
         else:
-            break
+            print("[!] Task not found.")
 
-    except ValueError:
-        print("[!] Please enter a valid value\n")
+
+def list_tasks(final_file):
+    with open(final_file, "r") as file:
+        info = file.read()
+        print(info)
+
+
+def remove_all_tasks(final_file):
+    with open(final_file, "w") as file:
+        file.write("")
+    print("[-] All tasks removed.")
+
+
+def edit_task(final_file):
+    with open(final_file, "r") as file:
+        info = file.read()
+        print(info)
+        task_to_edit = input("Enter the task to edit: ").strip().lower()
+        if task_to_edit in info:
+            new_task = input("Enter the new task: ").strip().lower()
+            info = info.replace(task_to_edit, new_task)
+            with open(final_file, "w") as file:
+                file.write(info)
+            print("[+] Task edited.")
+        else:
+            print("[!] Task not found.")
+
+
+if __name__ == "__main__":
+    file_name = input("Enter the file name: ").strip()
+    while not file_name:
+        print("[!] Enter a valid file name!")
+        file_name = input("Enter the file name: ").strip()
+    final_file = create_file(file_name)
+
+    while True:
+        try:
+            print_options()
+            choice = int(input("Enter your choice: "))
+
+            if choice == 1:
+                add_task(final_file)
+
+            elif choice == 2:
+                remove_task(final_file)
+
+            elif choice == 3:
+                list_tasks(final_file)
+
+            elif choice == 4:
+                remove_all_tasks(final_file)
+
+            elif choice == 5:
+                edit_task(final_file)
+
+            elif choice == 6:
+                break
+
+            else:
+                print("[!] Please enter a valid choice.")
+
+        except ValueError:
+            print("[!] Please enter a valid value.")
