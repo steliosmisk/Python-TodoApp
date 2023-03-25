@@ -1,5 +1,5 @@
-import time
 import os
+import time
 
 
 def print_options():
@@ -26,30 +26,33 @@ def create_file(file_name):
 
 
 def add_task(final_file):
+    with open(final_file, "r") as file:
+        info = file.readlines()
+        last_task_number = int(info[-1].split(".")[0]) if info else 0
     number_task = int(input("Enter the number of tasks: "))
     with open(final_file, "a") as file:
-        for i in range(number_task):
-            task = input(f"{i + 1}. Enter the task: ").strip().lower()
+        for i in range(last_task_number + 1, last_task_number + number_task + 1):
+            task = input(f"{i}. Enter the task: ").strip().lower()
             while not task:
                 print("[!] Enter a valid task!")
-                task = input(f"{i + 1}. Enter the task: ").strip().lower()
-            file.write(f'{i+1}. {task}' + "\n")
-        time.sleep(1)
-        print("[+] Tasks added.")
+                task = input(f"{i}. Enter the task: ").strip().lower()
+            file.write(f'{i}. {task}\n')
+    time.sleep(1)
+    print("[+] Tasks added.")
 
 
 def remove_task(final_file):
     with open(final_file, "r") as file:
-        info = file.read()
-        print(info)
-        task_to_remove = input("Enter the task to (the name with the number! e.g 1. example): ").strip().lower()
-        if task_to_remove in info:
-            info = info.replace(task_to_remove, "")
-            with open(final_file, "w") as file:
-                file.write(info)
-            print("[-] Task removed.")
-        else:
-            print("[!] Task not found.")
+        info = file.readlines()
+        print("".join(info))
+        task_to_remove = input("Enter the task to remove: ").strip().lower()
+    filtered_info = [task for task in info if not task.lower().startswith(task_to_remove)]
+    if len(filtered_info) != len(info):
+        with open(final_file, "w") as file:
+            file.write("".join(filtered_info))
+        print("[-] Task removed.")
+    else:
+        print("[!] Task not found.")
 
 
 def list_tasks(final_file):
@@ -66,20 +69,23 @@ def remove_all_tasks(final_file):
 
 def edit_task(final_file):
     with open(final_file, "r") as file:
-        info = file.read()
-        print(info)
+        info = file.readlines()
+        print("".join(info))
         task_to_edit = input("Enter the task to edit: ").strip().lower()
-        if task_to_edit in info:
+    for i, task in enumerate(info):
+        if task.lower().startswith(task_to_edit):
             new_task = input("Enter the new task: ").strip().lower()
-            info = info.replace(task_to_edit, new_task)
+            info[i] = f"{task.split('.')[0]}. {new_task}\n"
             with open(final_file, "w") as file:
-                file.write(info)
+                file.write("".join(info))
             print("[+] Task edited.")
-        else:
-            print("[!] Task not found.")
+            break
+    else:
+        print("[!] Task not found.")
 
 
 if __name__ == "__main__":
+    os.system('cls')
     file_name = input("Enter the file name: ").strip()
     while not file_name:
         print("[!] Enter a valid file name!")
